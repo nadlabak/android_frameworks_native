@@ -82,6 +82,9 @@ private:
     int dispatchSetCrop(va_list args);
     int dispatchSetPostTransformCrop(va_list args);
     int dispatchSetUsage(va_list args);
+#ifdef QCOM_HARDWARE
+    int dispatchSetBuffersSize(va_list args);
+#endif
     int dispatchLock(va_list args);
     int dispatchUnlockAndPost(va_list args);
 
@@ -93,6 +96,9 @@ protected:
     virtual int query(int what, int* value) const;
     virtual int queueBuffer(ANativeWindowBuffer* buffer);
     virtual int setSwapInterval(int interval);
+#ifdef QCOM_HARDWARE
+    virtual int setBuffersSize(int size);
+#endif
 
     virtual int connect(int api);
     virtual int disconnect(int api);
@@ -204,6 +210,15 @@ private:
 
     // must be accessed from lock/unlock thread only
     Region mDirtyRegion;
+
+    // mReqExtUsage is a flag set by app to mark a layer for display on
+    // external panels only. Depending on the value of this flag mReqUsage
+    // will be ORed with existing values.
+    // Possible values GRALLOC_USAGE_PRIVATE_EXTERNAL_ONLY,
+    // GRALLOC_USAGE_PRIVATE_EXTERNAL_BLOCK,
+    // GRALLOC_USAGE_PRIVATE_EXTERNAL_CC,
+    // It is initialized to 0
+    uint32_t mReqExtUsage;
 };
 
 }; // namespace android
